@@ -1,0 +1,47 @@
+### All User Request
+
+GET http://localhost:3000/users
+
+### User Request
+
+GET http://localhost:3000/users/3
+
+### Post User
+
+POST http://localhost:3000/users
+Content-Type: application/json
+
+{
+    "username": "Micheldu93",
+    "email": "michel@yolo.com",
+    "last_name": "Dupont",
+    "first_name": "Michel",
+    "password": "king"
+
+}
+
+### User Request
+
+DELETE  http://localhost:3000/users/7
+
+### All Series Request
+
+GET http://localhost:3000/series
+
+### Serie Request
+
+GET http://localhost:3000/series/3
+
+### Post User
+
+POST http://localhost:3000/series
+Content-Type: application/json
+
+{
+    "title": "Naruto",
+    "genre": "Shonen",
+    "author": "Masashi Kishimoto",
+    "format": "Manga",
+    "user_id": "1"
+
+}
