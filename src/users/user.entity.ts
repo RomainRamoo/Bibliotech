@@ -1,14 +1,15 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Serie } from "src/series/serie.entity";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity('users')
 export class User {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column()
+    @Column({ unique: true })
     email: string;
 
-    @Column()
+    @Column({ unique: true })
     username: string;
 
     @Column()
@@ -19,4 +20,7 @@ export class User {
 
     @Column()
     password: string;
+    
+    @OneToMany(() => Serie, (serie) => serie.user)
+    series: Serie[];
 }
