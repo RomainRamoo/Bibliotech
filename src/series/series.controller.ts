@@ -19,30 +19,30 @@ export class SeriesController {
     }
 
     @Get(":id")
-        async getOneSerie(@Param('id') id: number) {
-            const data = await this.seriesService.getOneSerie(id);
+    async getOneSerie(@Param('id') id: number) {
+        const data = await this.seriesService.getOneSerie(id);
     
-            return data;
-        }
+        return data;
+    }
 
     @Post()
-        async createSerie(@Body() serie: Serie) {
-            const data = await this.seriesService.createSerie(serie);
-            
-            return data;
-        }
+    async createSerie(@Body() serie: Serie) {
+        const data = await this.seriesService.createSerie(serie);
+        
+        return data;
+    }
 
     @Get(':id/volumes')
-        getVolumes(@Param('id') id: string) {
-            return this.volumesService.getVolumesBySerie(+id);
-        }
+    getVolumes(@Param('id') id: string) {
+        return this.volumesService.getVolumesBySerie(+id);
+    }
 
     @Post(':id/volumes')
-        addVolumeToSerie(
-            @Param('id') id: string,
-            @Body() dto: CreateVolumeDto
-        ) {
-            return this.volumesService.addNewVolume(dto, +id)
-        }
+    addVolumeToSerie(
+        @Param('id') id: string,
+        @Body() dto: CreateVolumeDto
+    ) {
+        return this.volumesService.addNewVolume(dto, +id)
+    }
         
 }

@@ -6,10 +6,19 @@ describe('UsersController', () => {
   let controller: UsersController;
   let service: UsersService;
 
+  const mockUsersService = {
+    getAllUsers: jest.fn(),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [UsersController],
-      providers: [UsersService]
+      providers: [
+        {
+          provide: UsersService,
+          useValue: mockUsersService,
+        },
+        ],
     }).compile();
 
     controller = module.get<UsersController>(UsersController);
@@ -21,7 +30,17 @@ describe('UsersController', () => {
     expect(controller).toBeDefined();
   });
 
-  it('should be defined (service)', () => {
-    expect(service).toBeDefined();
+  it('should return all users', async () => {
+    const mockResult = [
+      { id: 1, username: "larthass" },
+      { id: 2, username: "medneo" },
+    ];
+
+    mockUsersService.getAllUsers.mockResolvedValue(mockResult);
+
+    const result = await controller.getAllUsers();
+
+    expect(service.getAllUsers).toHaveBeenCalled();
+    expect(result).toBeDefined();
   });
 });
