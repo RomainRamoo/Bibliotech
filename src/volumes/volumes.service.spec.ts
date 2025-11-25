@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { VolumesService } from './volumes.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Volume } from './volume.entity';
-import { title } from 'process';
 
 
 describe('VolumesService', () => {
@@ -38,8 +37,10 @@ describe('VolumesService', () => {
     repository.findOne.mockResolvedValue(mockVolume);
     repository.delete.mockResolvedValue({ affected: 1 });
 
-    const result = await service.deleteOneVolume(1);
-    expect(repository.findOne).toHaveBeenCalledWith({ where: { id: 1 }});
+    const result = await service.deleteOneVolume(1, 1);
+    expect(repository.findOne).toHaveBeenCalledWith({ where: { id: 1, series: { id: 1 } },
+    relations: ['series'],
+    });
     expect(repository.delete).toHaveBeenCalledWith(1);
     expect(result).toEqual(mockVolume);
   })

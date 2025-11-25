@@ -26,6 +26,9 @@ export class Volume {
     is_read: boolean;
 
     @Column()
+    is_possess: boolean;
+
+    @Column()
     publication_date: Date;
 
     @ManyToOne(() => Serie, serie => serie.volumes, { onDelete: 'CASCADE' })

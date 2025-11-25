@@ -3,6 +3,7 @@ import { SeriesService } from './series.service';
 import { Serie } from './serie.entity';
 import { VolumesService } from 'src/volumes/volumes.service';
 import { CreateVolumeDto } from 'src/models/create-volume.dto';
+import { CreateSerieDto } from 'src/models/create-serie.dto';
 
 @Controller('series')
 export class SeriesController {
@@ -26,8 +27,9 @@ export class SeriesController {
     }
 
     @Post()
-    async createSerie(@Body() serie: Serie) {
-        const data = await this.seriesService.createSerie(serie);
+    async createSerie(@Body() dto: CreateSerieDto) {
+        const userId = 1;
+        const data = await this.seriesService.createSerie(dto, userId);
         
         return data;
     }
@@ -43,6 +45,14 @@ export class SeriesController {
         @Body() dto: CreateVolumeDto
     ) {
         return this.volumesService.addNewVolume(dto, +id)
+    }
+
+    @Delete(':seriesId/volumes/:volumeId')
+        async deleteOneVolume(
+            @Param('seriesId') seriesId: number,
+            @Param('volumeId') volumeId: number
+    )  {
+            return this.volumesService.deleteOneVolume(seriesId,volumeId);
     }
         
 }

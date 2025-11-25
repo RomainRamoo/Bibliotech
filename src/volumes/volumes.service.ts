@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Volume } from './volume.entity';
 import { Repository } from 'typeorm';
@@ -46,14 +46,17 @@ export class VolumesService {
         
     }
 
-    async deleteOneVolume(id: number): Promise<Volume> {
-        const volume = await this.volumesRepository.findOne({ where: { id }});
+    async deleteOneVolume(seriesId: number, volumeId: number): Promise<Volume> {
+        const volume = await this.volumesRepository.findOne({ 
+            where: { id: volumeId, series: { id: seriesId } },
+            relations: ['series']
+        });
         
         if (!volume) {
-            throw new NotFoundException(`Volume with id ${id} not found`);
+            throw new NotFoundException(`Volume ${volumeId} not found for series ${seriesId}`);
         }
         
-        await this.volumesRepository.delete(id);
+        await this.volumesRepository.delete(volumeId);
 
         return volume;
         

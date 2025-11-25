@@ -22,7 +22,7 @@ Content-Type: application/json
 
 ### User Request
 
-DELETE  http://localhost:3000/users/8
+DELETE  http://localhost:3000/users/10
 
 ### All Series Request
 
@@ -57,12 +57,17 @@ POST http://localhost:3000/series/2/volumes
 Content-Type: application/json
 
 {
-    "volume_number": 4,
+    "volume_number": 6,
     "price": "14.50",
     "image_url": "https://example.com/bs4.jpg",
     "signed": true,
     "collector": false,
     "is_read": true,
+    "is_possess": true,
     "publication_date": "2000-11-14T23:00:00.000Z",
     "series": { "id": 2 }
 }
+
+### Delete Volume
+
+DELETE http://localhost:3000/series/2/volumes/12

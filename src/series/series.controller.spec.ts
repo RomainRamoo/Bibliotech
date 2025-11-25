@@ -7,6 +7,7 @@ import { VolumesService } from 'src/volumes/volumes.service';
 describe('SeriesController', () => {
   let controller: SeriesController;
   let service: SeriesService;
+  let volumesService: VolumesService;
 
   const mockSeriesService = {
     getAllSeries: jest.fn(),
@@ -14,7 +15,9 @@ describe('SeriesController', () => {
 
   const mockVolumesService = {
     getVolumesBySerie: jest.fn(),
+    deleteOneVolume: jest.fn(),
   };
+
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -33,6 +36,7 @@ describe('SeriesController', () => {
 
     controller = module.get<SeriesController>(SeriesController);
     service = module.get<SeriesService>(SeriesService);
+    volumesService = module.get<VolumesService>(VolumesService);
   });
 
   it('should be defined', () => {
@@ -52,4 +56,18 @@ describe('SeriesController', () => {
     expect(service.getAllSeries).toHaveBeenCalled();
     expect(result).toEqual(mockResult);
   });
+
+  it('should delete one volume of a serie', async () => {
+    const mockResult = [
+      { id: 1, volume_number:1 },
+    ];
+
+    mockVolumesService.deleteOneVolume.mockResolvedValue(mockResult);
+
+    const result = await controller.deleteOneVolume(1, 1);
+
+    expect(volumesService.deleteOneVolume).toHaveBeenCalledWith(1, 1);
+    expect(result).toEqual(mockResult);
+  });
+  
 });
