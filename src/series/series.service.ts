@@ -14,15 +14,15 @@ export class SeriesService {
     }
 
     async getOneSerie(id: number): Promise<Serie | null> {
-            // récupère un utilisateur avec un id
+            // récupère une série avec un id
             return this.seriesRepository.findOneBy({id});
         }
 
-    async createUser(serie: Serie): Promise<string> {
-            // crée un nouvel utilisateur
+    async createSerie(serie: Serie): Promise<string> {
+            // crée une nouvelle série
             try {
                 await this.seriesRepository.save(serie)
-                return `cette série a été posté : ${serie.title}`
+                return `Cette série a été créé : ${serie.title}`
     
             } catch (error) {
                 console.log('error :::::' , error)

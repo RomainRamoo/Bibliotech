@@ -4,7 +4,7 @@ GET http://localhost:3000/users
 
 ### User Request
 
-GET http://localhost:3000/users/3
+GET http://localhost:3000/users/1
 
 ### Post User
 
@@ -13,7 +13,7 @@ Content-Type: application/json
 
 {
     "username": "Micheldu93",
-    "email": "michel@yolo.com",
+    "email": "michelle@yolo.com",
     "last_name": "Dupont",
     "first_name": "Michel",
     "password": "king"
@@ -22,7 +22,7 @@ Content-Type: application/json
 
 ### User Request
 
-DELETE  http://localhost:3000/users/7
+DELETE  http://localhost:3000/users/8
 
 ### All Series Request
 
@@ -32,18 +32,37 @@ GET http://localhost:3000/series
 
 GET http://localhost:3000/series/3
 
-### Post User
+### Post Serie
 
 POST http://localhost:3000/series
 Content-Type: application/json
 
 {
-    "title": "Naruto",
-    "genre": "Shonen",
-    "author": "Masashi Kishimoto",
+    "title": "Berserk",
+    "genre": "Seinen",
+    "author": "Kentaro Miura",
     "format": "Manga",
     "user_id": "1"
-
 }
 
 // VOLUMES TESTS
+
+### Volume Request
+
+GET http://localhost:3000/series/2/volumes
+
+### Post Volume
+
+POST http://localhost:3000/series/2/volumes
+Content-Type: application/json
+
+{
+    "volume_number": 4,
+    "price": "14.50",
+    "image_url": "https://example.com/bs4.jpg",
+    "signed": true,
+    "collector": false,
+    "is_read": true,
+    "publication_date": "2000-11-14T23:00:00.000Z",
+    "series": { "id": 2 }
+}

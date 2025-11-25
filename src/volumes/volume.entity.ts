@@ -1,7 +1,8 @@
 import { Serie } from "src/series/serie.entity";
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, Unique } from "typeorm";
 
 @Entity('volumes')
+@Unique(['series', 'volume_number'])
 export class Volume {
     @PrimaryGeneratedColumn()
     id: number;
@@ -13,7 +14,7 @@ export class Volume {
     price: number;
 
     @Column({ nullable: true })
-    image_url: string
+    image_url: string;
 
     @Column()
     signed: boolean;
@@ -27,7 +28,7 @@ export class Volume {
     @Column()
     publication_date: Date;
 
-    @ManyToOne(() => Serie, series => series.volumes, { onDelete: 'CASCADE'})
-    @JoinColumn({ name: 'serie_id'})
-    series: Serie
+    @ManyToOne(() => Serie, serie => serie.volumes, { onDelete: 'CASCADE' })
+    @JoinColumn({ name: 'series_id' })
+    series: Serie;
 }
