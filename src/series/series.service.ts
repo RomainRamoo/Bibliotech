@@ -20,6 +20,11 @@ export class SeriesService {
         }
 
     async createSerie(dto: CreateSerieDto, userId: number): Promise<string> {
+        // Vérifie si la série existe déjà
+        const existingSerie = await this.seriesRepository.findOne({ where: { title: dto.title}});
+        if (existingSerie) {
+            throw new Error("Cet série est déjà créée")
+        }
             // crée une nouvelle série
             try {
                 await this.seriesRepository.save({
@@ -33,4 +38,24 @@ export class SeriesService {
                 throw new Error("Impossible de créer la série")
             }
         }
+
+    async updateOneSerie (id: number, dto: CreateSerieDto): Promise<string> {
+        try {
+            const serie = await this.seriesRepository.findOne({ where: { id }});
+
+            if (!serie) {
+                throw new Error(`La série avec l'id ${id} n'existe pas`);
+            }
+
+            const updatedSerie = await this.seriesRepository.save({
+                ...serie,
+                ...dto,
+            });
+
+            return `La série ${updatedSerie.title} a été modifié `
+        } catch (error) {
+            console.log('error :::::' , error)
+            throw new Error("Impossible de modifier la série")
+        }
+    }
 }

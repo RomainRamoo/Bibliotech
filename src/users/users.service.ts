@@ -38,7 +38,7 @@ export class UsersService {
 
         try {
             await this.userRepository.save(user)
-            return `L'utilisateur a été créé : ${dto.username}`
+            return `L'utilisateur ${dto.username} a été créé `
 
         } catch (error) {
             console.log('error :::::' , error)
@@ -49,5 +49,26 @@ export class UsersService {
     async deleteOneUser(id: number): Promise<void> {
         // supprime un utilisateur avec un id
         await this.userRepository.delete(id);
+    }
+
+    async updateOneUser(id: number, dto: CreateUserDto): Promise<string> {
+        try {
+            const user = await this.userRepository.findOne({ where: { id }});
+
+            if (!user) {
+                throw new Error(`L'utilisateur avec l'id ${id} n'existe pas`);
+            }
+
+            const updatedUser = await this.userRepository.save({
+                ...user,
+                ...dto,
+            });
+
+            return `L'utilisateur ${updatedUser.username} a été modifié `
+        } catch (error) {
+            console.log('error :::::' , error)
+            throw new Error("Impossible de modifier l'utilisateur")
+        }
+        
     }
 }

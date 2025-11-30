@@ -46,6 +46,35 @@ export class VolumesService {
         
     }
 
+    async updateOneVolume(
+        id: number, 
+        dto: CreateVolumeDto, 
+        seriesId: number
+    ): Promise<string> {
+        try {
+            const volume = await this.volumesRepository.findOne({ 
+                where: { id, series: { id: seriesId }
+            },
+        });
+
+            if (!volume) {
+                throw new Error(`Le volume avec l'id ${id} n'existe pas`);
+            }
+
+            const updatedVolume = await this.volumesRepository.save({
+                ...volume,
+                ...dto,
+                series: { id: seriesId }
+            });
+
+            return `Le volume ${updatedVolume.volume_number} a été modifié `
+        } catch (error) {
+            console.log('error :::::' , error)
+            throw new Error("Impossible de modifier le volume")
+        }
+
+    }
+
     async deleteOneVolume(seriesId: number, volumeId: number): Promise<Volume> {
         const volume = await this.volumesRepository.findOne({ 
             where: { id: volumeId, series: { id: seriesId } },

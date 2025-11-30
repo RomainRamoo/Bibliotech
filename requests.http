@@ -4,7 +4,7 @@ GET http://localhost:3000/users
 
 ### User Request
 
-GET http://localhost:3000/users/1
+GET http://localhost:3000/users/12
 
 ### Post User
 
@@ -20,9 +20,24 @@ Content-Type: application/json
 
 }
 
+### Update User
+
+PUT http://localhost:3000/users/12
+Content-Type: application/json
+
+{
+    "username": "Micheldu78",
+    "email": "michelle@yolo.com",
+    "last_name": "Du",
+    "first_name": "Michel",
+    "password": "king"
+
+}
+
+
 ### User Request
 
-DELETE  http://localhost:3000/users/10
+DELETE  http://localhost:3000/users/11
 
 ### All Series Request
 
@@ -45,27 +60,50 @@ Content-Type: application/json
     "user_id": "1"
 }
 
+### update Serie
+
+Put http://localhost:3000/series/30
+Content-Type: application/json
+
+{
+    "title": "Great Teacher Onizuka",
+    "genre": "Shonen",
+    "author": "Toru Fujisawa",
+    "format": "Manga",
+    "user_id": "1"
+}
+
 // VOLUMES TESTS
 
 ### Volume Request
 
-GET http://localhost:3000/series/2/volumes
+GET http://localhost:3000/series/30/volumes
 
 ### Post Volume
 
-POST http://localhost:3000/series/2/volumes
+POST http://localhost:3000/series/30/volumes
 Content-Type: application/json
 
 {
-    "volume_number": 6,
-    "price": "14.50",
-    "image_url": "https://example.com/bs4.jpg",
-    "signed": true,
+    "volume_number": 2,
+    "price": "6.95",
+    "image_url": "https://example.com/gto1.jpg",
+    "signed": false,
     "collector": false,
     "is_read": true,
-    "is_possess": true,
-    "publication_date": "2000-11-14T23:00:00.000Z",
-    "series": { "id": 2 }
+    "is_possess": false,
+    "publication_date": "2001-04-14T23:00:00.000Z",
+    "series": { "id": 30 }
+}
+
+### Update Volume
+
+PUT  http://localhost:3000/series/30/volumes/15
+Content-Type: application/json
+
+{
+    "image_url": "https://example.com/gto2.jpg",
+    "is_possess": true
 }
 
 ### Delete Volume
