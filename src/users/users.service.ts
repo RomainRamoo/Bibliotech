@@ -21,6 +21,11 @@ export class UsersService {
         return this.userRepository.findOneBy({id});
     }
 
+    async getOneUserbyUserName(userName: string): Promise<User | null> {
+        // récupère un utilisateur avec un username
+        return await this.userRepository.findOneBy({['username']: userName});
+    }
+
     async createUser(dto: CreateUserDto): Promise<string> {
         // Vérifie si l'email existe déjà
         const existing = await this.userRepository.findOne({ where: { email: dto.email}});

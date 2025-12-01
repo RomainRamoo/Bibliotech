@@ -6,6 +6,7 @@ import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { SeriesModule } from './series/series.module';
 import { VolumesModule } from './volumes/volumes.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { VolumesModule } from './volumes/volumes.module';
     UsersModule,
     SeriesModule,
     VolumesModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

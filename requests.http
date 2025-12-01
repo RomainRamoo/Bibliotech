@@ -12,11 +12,11 @@ POST http://localhost:3000/users
 Content-Type: application/json
 
 {
-    "username": "Micheldu93",
-    "email": "michelle@yolo.com",
-    "last_name": "Dupont",
-    "first_name": "Michel",
-    "password": "king"
+    "username": "GOKU",
+    "email": "goku@yolo.com",
+    "last_name": "goku",
+    "first_name": "san",
+    "password": "dragonball"
 
 }
 
@@ -109,3 +109,15 @@ Content-Type: application/json
 ### Delete Volume
 
 DELETE http://localhost:3000/series/2/volumes/12
+
+
+### Auth Login
+
+GET http://localhost:3000/auth
+Content-Type: application/json
+
+{
+    "username" : "GOKU",
+    "password": "dragonball"
+    
+}

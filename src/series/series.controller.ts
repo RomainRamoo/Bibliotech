@@ -1,6 +1,5 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put } from '@nestjs/common';
 import { SeriesService } from './series.service';
-import { Serie } from './serie.entity';
 import { VolumesService } from 'src/volumes/volumes.service';
 import { CreateVolumeDto } from 'src/models/create-volume.dto';
 import { CreateSerieDto } from 'src/models/create-serie.dto';
@@ -20,7 +19,7 @@ export class SeriesController {
     };
 
     @Get(":id")
-    async getOneSerie(@Param('id') id: number) {
+    async getOneSerie(@Param('id', ParseIntPipe) id: number) {
         const data = await this.seriesService.getOneSerie(id);
     
         return data;
@@ -36,7 +35,7 @@ export class SeriesController {
 
     @Put(':id')
     async updateOneSerie(
-        @Param('id') id:string,
+        @Param('id', ParseIntPipe) id:string,
         @Body() dto: CreateSerieDto,
     ) {
         const seriesId = Number(id);
@@ -44,13 +43,14 @@ export class SeriesController {
     };
 
     @Get(':id/volumes')
-    getVolumes(@Param('id') id: string) {
+    getVolumes(
+        @Param('id', ParseIntPipe) id: string) {
         return this.volumesService.getVolumesBySerie(+id);
     };
 
     @Post(':id/volumes')
     addVolumeToSerie(
-        @Param('id') id: string,
+        @Param('id', ParseIntPipe) id: string,
         @Body() dto: CreateVolumeDto
     ) {
         return this.volumesService.addNewVolume(dto, +id)
@@ -58,16 +58,16 @@ export class SeriesController {
 
     @Delete(':seriesId/volumes/:volumeId')
         async deleteOneVolume(
-            @Param('seriesId') seriesId: number,
-            @Param('volumeId') volumeId: number
+            @Param('seriesId', ParseIntPipe) seriesId: number,
+            @Param('volumeId', ParseIntPipe) volumeId: number
     )  {
             return this.volumesService.deleteOneVolume(seriesId,volumeId);
     };
 
     @Put(':seriesId/volumes/:volumeId')
     async updateOneVolume(
-        @Param('seriesId') seriesId: number,
-        @Param('volumeId') VolumeId: number,
+        @Param('seriesId', ParseIntPipe) seriesId: number,
+        @Param('volumeId', ParseIntPipe) VolumeId: number,
         @Body() dto: CreateVolumeDto,
     ) {
         return this.volumesService.updateOneVolume(VolumeId, dto, seriesId);
