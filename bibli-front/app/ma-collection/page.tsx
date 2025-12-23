@@ -6,6 +6,8 @@ import ImageStats from "../../public/etude-de-marche.png"
 import ImageFiltre from "../../public/filtre.png"
 import Image20ThCenturyBoys from "../../public/century boy.webp"
 import ImageCompleted from "../../public/succes.png"
+import ImageAkira from "../../public/akira.webp"
+import ImageCancel from "../../public/signe-de-la-croix.png"
 
 
 export default function Series () {
@@ -172,7 +174,8 @@ export default function Series () {
             </div>
             <div className="flex justify-between mt-2 mr-2 ml-2">
                 <div className="flex justify-start outline-1 outline-gray-300 rounded-xl">
-                    <Image className="m-3"
+                    <Image 
+                        className="m-3"
                         src={Image20ThCenturyBoys}
                         alt="20th Century boys"
                         width={60}
@@ -189,23 +192,23 @@ export default function Series () {
                     </div>
                 </div>
             </div>
-            <div className="flex justify-between mt-2 mr-2 ml-2">
-                <div className="flex justify-start outline-1 outline-gray-300 rounded-xl">
-                    <Image className="m-3"
-                        src={Image20ThCenturyBoys}
-                        alt="20th Century boys"
+            <div className="m-2">
+                <div className="flex justify-between outline-1 outline-green-300 rounded-xl">
+                    <Image 
+                        className="m-3"
+                        src={ImageAkira}
+                        alt="Akira"
                         width={60}
                     />
-                    <h3 className="self-center m-5 text-xl">20th Century boys</h3>
-                </div>
-                <div className="flex">
-                    <div className="outline-1 outline-gray-300 rounded-xl self-center p-3">
+                    <h3 className="self-center m-5 text-xl">Araycrust recommande Akira</h3>
+                    <button className="self-start">
                         <Image
-                            src={ImageCompleted}
-                            alt="Icone complet"
-                            width={80}
+                            className="m-1"
+                            src={ImageCancel}
+                            alt="croix"
+                            width={20}
                         />
-                    </div>
+                    </button>
                 </div>
             </div>
             
