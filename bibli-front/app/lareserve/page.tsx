@@ -1,9 +1,11 @@
 'use client'
 import IBook from "@/@types/Series";
 import { useEffect, useState } from "react";
-import FormVolumes from "@/components/FormVolumes";
 import AddBook from "@/components/AddBook";
-import { createBook, searchBookByTitle } from "../services/book.service";
+import { createBook, searchSerie, searchSerieWithLastVolumeByTitle } from "../services/book.service";
+import IVolume from "@/@types/Volume";
+import FormVolumes, { searchSerieWithLastVolume } from "@/components/FormVolumes";
+import { createVolume } from "../services/volume.service";
 
 
 interface IBookProps {
@@ -14,12 +16,19 @@ interface IBookProps {
 export default function Admin ({onUpdate}: IBookProps) {
     const [searchTitle, setSearchTitle] = useState("");
     const [debouncedSearchTitle, setDebouncedSearchTitle] = useState("");
+    
     const [bookData, setBookData] = useState<IBook | null>(null);
-    const [activeSubsection, setActiveSubsection] = useState("Ajouter");
+    const [volumeData, setVolumeData] = useState<IVolume | null>(null);
+    const [serieWithVolume, setSerieWithVolume] = useState<searchSerieWithLastVolume | null>(null);
+    
     const [activeSection, setActiveSection] = useState("Livres");
+    const [activeSubsection, setActiveSubsection] = useState("Volumes");
+    
     const [isSearching, setIsSearching] = useState(false);
     const [hasSearched, setHasSearched] = useState(false);
+    
 
+    // Debounce
     useEffect(() => {
         const timeout = setTimeout(() => {
             setDebouncedSearchTitle(searchTitle);
@@ -28,51 +37,89 @@ export default function Admin ({onUpdate}: IBookProps) {
         return () => clearTimeout(timeout);
     }, [searchTitle]);
 
-
-
+    //Recherche Principale
     useEffect(() => {
         if (!debouncedSearchTitle || debouncedSearchTitle.trim().length < 3) {
             setBookData(null);
+            setSerieWithVolume(null);
             return;
         }
 
-        const fetchBook = async () => {
+        const fetchData = async () => {
             setIsSearching(true);
             setHasSearched(true);
 
 
             try {
-                const result = await searchBookByTitle(debouncedSearchTitle);
-                setBookData(result);
+                if (activeSubsection === 'Volumes') {
+                    const serie = 
+                        await searchSerieWithLastVolumeByTitle(debouncedSearchTitle);
+                    setSerieWithVolume(serie);
+                    setBookData(null);
+
+                } else {
+                    const book = await searchSerie(debouncedSearchTitle);
+                    setBookData(book);
+                    setSerieWithVolume(null);
+                }
             } catch {
                 setBookData(null);
+                setSerieWithVolume(null);
             } finally {
                 setIsSearching(false);
             }
             
         };
 
-        fetchBook();
-    }, [debouncedSearchTitle]);
+        fetchData();
+    }, [debouncedSearchTitle, activeSubsection]);
 
     const handleCreateBook = async (data: {
         title: string;
         genre: string;
         format: string;
         author: string;
+        book_cover?: string;
+        lastVolumeNumber: number;
     }) => {
         try {
-            await createBook({
-                ...data,
-                user_id: 1,
-            });
+            await createBook(data);
 
             setSearchTitle("");
             setBookData(null);
+            onUpdate();
         } catch (error) {
             throw error;
         }
     }
+
+    const addVolume = async (data: {
+        serieId: number;
+        volumeNumber: number;
+        publication_date?: string;
+        price?: number;
+        image_url?: string;
+    }) => {
+        try {
+            const payload = {
+                volume_number: data.volumeNumber,
+                price: data.price,
+                image_url: data.image_url,
+                publication_date: data.publication_date,
+                signed: false,
+                collector: false,
+                is_read: false,
+                is_possess: false,
+            };
+
+    await createVolume(payload, data.serieId);
+
+        } catch (error) {
+            console.error(error);
+            throw error;
+            
+        }
+    };
 
     
 
@@ -136,21 +183,21 @@ export default function Admin ({onUpdate}: IBookProps) {
                                 searchTitle={searchTitle}
                                 onSearchChange={setSearchTitle}
                                 bookData={bookData}
+                                volumeData={volumeData}
                                 onSave={handleCreateBook}
                                 isSearching={isSearching}
                                 hasSearched={hasSearched}
-
                         />)}
-                        
                         {(activeSubsection === 'Volumes') && (
                             <FormVolumes
                                 searchTitle={searchTitle}
                                 onSearchChange={setSearchTitle}
-                                bookData={bookData}
-                                onSave={handleCreateBook}
+                                searchSerie={serieWithVolume}
+                                onSave={addVolume}
                                 isSearching={isSearching}
                                 hasSearched={hasSearched}
                         />)}
+                        
 
                     </div>
 

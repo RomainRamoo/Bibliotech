@@ -6,6 +6,7 @@ export default interface IBook {
     genre: string;
     author: string;
     format: string;
+    book_cover?: string;
     user_id: number;
 
 

@@ -1,13 +1,15 @@
 import IBook from "@/@types/Series";
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import SuccessMessage from "./SuccessMessage";
 import ImageValide from "../public/coche.png";
+import IVolume from "@/@types/Volume";
+import SuccessMessage from "./SuccessMessage";
 
 interface AddBookProps {
     searchTitle: string;
     onSearchChange: (value: string) => void;
     bookData: IBook | null;
+    volumeData: IVolume | null;
     isSearching: boolean;
     hasSearched: boolean;
     onSave: (data: {
@@ -15,41 +17,79 @@ interface AddBookProps {
         genre: string;
         format: string;
         author: string;
+        price?: number;
+        book_cover?: string;
+        lastVolumeNumber: number;
     }) => Promise<void>;
 }
+
+type Message = {
+    text: string;
+    type: 'succes'| 'error';
+} | null;
 
 export default function AddBook ({
     searchTitle,
     onSearchChange,
     bookData,
+    volumeData,
     onSave,
     isSearching,
     hasSearched,
 }: AddBookProps) {
     
-    const [successMessage, setSuccessMessage] = useState('');
-    const [isSuccessMessage, setIsSuccessMessage] = useState(true);
+    const [message, setMessage] = useState<Message>(null);
     const [title, setTitle] = useState("");
     const [genre, setGenre] = useState("");
     const [format, setFormat] = useState("");
     const [author, setAuthor] = useState("");
+    const [lastVolumeNumber, setLastVolumeNumber] = useState<number>(1);
+    const [price, setPrice] = useState<number | null>(null);
+    const [isLoading, setIsLoading] = useState(false);
+    const [url, setUrl] = useState<string | null>(null);
+
+    
+    
 
     const handleSave = async () => {
-        if (!title || !author || !format || !genre) {
-            setSuccessMessage("❌ Champs obligatoires manquants.")
-        }
-        try {
-            await onSave({ title, genre, format, author });
 
-            setAuthor("");
-            setFormat("");
-            setGenre("");
-            setTitle("");
-            
-            setSuccessMessage('✅ Livre ajouté !');
-            setTimeout(() => setSuccessMessage(""), 3000);
+        if (!title || !author || !format || !genre) {
+            setMessage({text: "❌ Champs obligatoires manquants.", type: 'error'})
+            return;
+        }
+
+        setIsLoading(true);
+
+        
+        try {
+                await  onSave({
+                    title,
+                    genre,
+                    format,
+                    author,
+                    book_cover: 
+                        url && url.trim() !== ""
+                        ? url.trim()
+                        : undefined,
+                    price: price ?? undefined,
+                    lastVolumeNumber,
+            });
+
+            //reset form
+            setTitle('');
+            setGenre('');
+            setFormat('');
+            setAuthor('');
+            setPrice(null);
+            setLastVolumeNumber(1);
+
+            setMessage({ text: 'Livre ajouté !', type: 'succes' });
+            setTimeout(() => setMessage({text: "", type: 'succes'}), 3000);
+
         } catch (error) {
-            setSuccessMessage("❌ Une erreur est survenue lors de l'enregistrement.");
+            setMessage({ text:"❌ Une erreur est survenue lors de l'enregistrement.", type: 'error'});
+        } finally {
+            { setIsLoading(false) }
         }
     }
 
@@ -61,7 +101,8 @@ export default function AddBook ({
         setGenre(bookData.genre);
         setFormat(bookData.format);
         setAuthor(bookData.author);
-    }, [bookData]);
+        setPrice(volumeData?.price ?? null);
+    }, [bookData, volumeData]);
     
     return (
         <>
@@ -77,19 +118,19 @@ export default function AddBook ({
                             />
 
                             {isSearching && (
-                                <p className="text-sm text-gray-400 italic">
+                                <p className="text-sm text-gray-400 italic ml-18">
                                     Recherche en cours...
                                 </p>
                             )}
 
                             {!isSearching && hasSearched && !bookData && (
-                                <p className="text-sm text-gray-400">
+                                <p className="text-sm text-gray-400 ml-18">
                                     Aucun résultat
                                 </p>
                             )}
                             
                             {bookData && (
-                                <p className="text-sm text-green-600">
+                                <p className="text-sm text-green-600 ml-18">
                                     {bookData.title}
                                 </p>
                             )}
@@ -101,13 +142,34 @@ export default function AddBook ({
                                 value={title}
                                 onChange={(event) => {setTitle(event.target.value)}}
                             />
+
+                            <input 
+                                type="text" 
+                                placeholder="Dernier volume sorti" 
+                                className="input self-center m-4"
+                                value={lastVolumeNumber}
+                                min={1}
+                                onChange={(event) => setLastVolumeNumber(Number(event.target.value))}
+                            />
+
+                            <input 
+                                type="number" 
+                                placeholder="Prix" 
+                                className="input self-center m-4"
+                                value={price ?? ''}
+                                onChange={(event) => {
+                                    const value = event.target.value;
+                                    setPrice(value === '' ? null : Number(value))
+                                }} 
+                            />
+                            
                             <select 
                                 defaultValue="Format" 
                                 className="select self-center m-4"
                                 value={format}
                                 onChange={(event) => {setFormat(event.target.value)}}
                             >
-                                <option disabled={true}>Format</option>
+                                <option disabled={false}>Format</option>
                                 <option>Manga</option>
                                 <option>Comic</option>
                                 <option>BD</option>
@@ -119,14 +181,27 @@ export default function AddBook ({
                                 value={genre}
                                 onChange={(event) => {setGenre(event.target.value)}}
                             >
-                                <option disabled={true}>Genre</option>
+                                <option disabled={false}>Genre</option>
                                 <option>S.F</option>
+                                <option>Thriller</option>
                                 <option>Fantastique</option>
                                 <option>Héroïque</option>
                                 <option>Fantasy</option>
                                 <option>Horreur</option>
                                 <option>Dark Fantasy</option>
+                                <option>Shonen</option>
+                                <option>Seinen</option>
+                                <option>Autre</option>
                             </select>
+
+                            <input 
+                                type="url" 
+                                placeholder="Lien de la couverture" 
+                                className="input self-center m-4"
+                                value={url ?? ""}
+                                onChange={(event) => setUrl(event.target.value || null)}
+                            />
+
                             <input
                                 type="text" 
                                 placeholder="Auteur" 
@@ -138,22 +213,25 @@ export default function AddBook ({
                             <div className="flex justify-around">
                                 <h3 className="self-center m-4 text-xl">Ajouter à la réserve</h3>
                                 <button 
+                                    disabled={isLoading}
                                     type="button"
                                     onClick={handleSave}>
-                                    <Image
+                                        {isLoading ? 'Création...' : <Image
                                         src={ImageValide}
                                         alt="Valider"
                                         width={50}
-                                    />
+                                    /> }
+                                    
                                 </button>
                             </div>
                         </div>
                     </fieldset>
-                    <div className="self-center">
-                        {successMessage && <SuccessMessage 
-                        successMessage = {successMessage} 
-                        isSuccessMessage = {isSuccessMessage}/>}
-                    </div>
+                    {message && (
+                        <SuccessMessage
+                            successMessage={message.text}
+                            isSuccessMessage={message.type === 'succes'}
+                        />
+                    )}
                 
         </>
     )

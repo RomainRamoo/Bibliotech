@@ -9,6 +9,6 @@ export default interface IVolume {
     collector: boolean;
     is_read: boolean;
     is_possess: boolean;
-    publication_date?: Date;
+    publication_date?: string;
     series_id: number;
 }

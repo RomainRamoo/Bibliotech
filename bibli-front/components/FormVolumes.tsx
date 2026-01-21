@@ -1,60 +1,99 @@
-import IBook from "@/@types/Series";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
-import SuccessMessage from "./SuccessMessage";
 import ImageValide from "../public/coche.png";
+import SuccessMessage from "./SuccessMessage";
+import { DayPicker } from "react-day-picker";
+import { createVolume } from "@/app/services/volume.service";
 
-interface AddBookProps {
+interface FormVolumesProps {
     searchTitle: string;
     onSearchChange: (value: string) => void;
-    bookData: IBook | null;
+    searchSerie: searchSerieWithLastVolume | null;
     isSearching: boolean;
     hasSearched: boolean;
     onSave: (data: {
-        title: string;
-        genre: string;
-        format: string;
-        author: string;
+        serieId: number;
+        price?: number;
+        publication_date?: string;
+        image_url?: string;
+        volumeNumber: number;
     }) => Promise<void>;
 }
 
+export interface searchSerieWithLastVolume {
+    id: number;
+    title: string;
+    genre: string;
+    author: string;
+    format: string;
+    lastVolumeNumber: number | null;
+}
 
-export default function formVolume ({
+type Message = {
+    text: string;
+    type: 'succes'| 'error';
+} | null;
+
+export default function FormVolumes ({
     searchTitle,
     onSearchChange,
-    bookData,
-    onSave,
+    searchSerie,
     isSearching,
     hasSearched,
-}: AddBookProps) {
+    onSave,
+}: FormVolumesProps) {
+    
+    const [volumeNumber, setVolumeNumber] = useState<number>(1);
+    const [price, setPrice] = useState<number | null>(null);
+    const [isLoading, setIsLoading] = useState(false);
+    const [message, setMessage] = useState<Message>(null);
+    const [publication_date, setPublication_Date] = useState<string | null>(null);
+    const [url, setUrl] = useState<string | null>(null);
 
-        const [successMessage, setSuccessMessage] = useState('');
-        const [isSuccessMessage, setIsSuccessMessage] = useState(true);
-        const [title, setTitle] = useState("");
-        const [genre, setGenre] = useState("");
-        const [format, setFormat] = useState("");
-        const [author, setAuthor] = useState("");
+    useEffect(() => {
+        if (!searchSerie) return;
 
-        const handleSave = async () => {
-        if (!title || !author || !format || !genre) {
-            setSuccessMessage("❌ Champs obligatoires manquants.")
-        }
+        setVolumeNumber(
+            searchSerie.lastVolumeNumber
+            ? searchSerie.lastVolumeNumber + 1
+            : 1
+        );
+    }, [searchSerie]);
+
+    const handleSubmit = async () => {
+        if (!searchSerie) return;
+
+        setIsLoading(true);
+        setMessage(null);
+
         try {
-            await onSave({ title, genre, format, author });
+            const payload = {
+            volume_number: volumeNumber,
+            signed: false,
+            collector: false,
+            is_read: false,
+            is_possess: false,
+            price: price ?? undefined,
+            image_url:
+                url && url.trim() !== ""
+                ? url.trim()
+                : undefined,
+            publication_date:
+                publication_date && publication_date !== ""
+                ? publication_date
+                : undefined,
+            };
 
-            setAuthor("");
-            setFormat("");
-            setGenre("");
-            setTitle("");
-            
-            setSuccessMessage('✅ Livre ajouté !');
-            setTimeout(() => setSuccessMessage(""), 3000);
-        } catch (error) {
-            setSuccessMessage("❌ Une erreur est survenue lors de l'enregistrement.");
+            await createVolume(payload, searchSerie.id);
+
+            setMessage({ text: "Volume ajouté", type: "succes" });
+        } catch {
+            setMessage({ text: "Erreur lors de l'ajout", type: "error" });
+        } finally {
+            setIsLoading(false);
         }
-    }
-
-
+    };
+    
     return (
         <>
             
@@ -62,90 +101,94 @@ export default function formVolume ({
                         <div className="flex flex-col m-6">
                             <input 
                                 type="text" 
-                                placeholder="Chercher" 
+                                placeholder="Chercher un Titre" 
                                 className="input self-center m-4"
                                 value={searchTitle}
                                 onChange={(event) => onSearchChange(event.target.value)}
                             />
 
                             {isSearching && (
-                                <p className="text-sm text-gray-400 italic">
+                                <p className="text-sm text-gray-400 italic ml-18">
                                     Recherche en cours...
                                 </p>
                             )}
 
-                            {!isSearching && hasSearched && !bookData && (
-                                <p className="text-sm text-gray-400">
+                            {!isSearching && hasSearched && !searchSerie && (
+                                <p className="text-sm text-gray-400 ml-18">
                                     Aucun résultat
                                 </p>
                             )}
                             
-                            {bookData && (
-                                <p className="text-sm text-green-600">
-                                    {bookData.title}
+                            {searchSerie && (
+                                <p className="text-green-600 ml-18">
+                                    {searchSerie.title} — dernier volume{" "}
+                                    {searchSerie.lastVolumeNumber ?? "aucun"}
                                 </p>
                             )}
 
                             <input 
-                                type="text" 
-                                placeholder="Titre" 
+                                type="number" 
+                                placeholder="Dernier volume sorti" 
                                 className="input self-center m-4"
-                                value={title}
-                                onChange={(event) => {setTitle(event.target.value)}}
+                                value={volumeNumber}
+                                min={1}
+                                onChange={(event) => setVolumeNumber(Number(event.target.value))}
                             />
-                            <select 
-                                defaultValue="Format" 
-                                className="select self-center m-4"
-                                value={format}
-                                onChange={(event) => {setFormat(event.target.value)}}
-                            >
-                                <option disabled={true}>Format</option>
-                                <option>Manga</option>
-                                <option>Comic</option>
-                                <option>BD</option>
-                                <option>Autres</option>
-                            </select>
-                            <select 
-                                defaultValue="Genre" 
-                                className="select self-center m-4"
-                                value={genre}
-                                onChange={(event) => {setGenre(event.target.value)}}
-                            >
-                                <option disabled={true}>Genre</option>
-                                <option>S.F</option>
-                                <option>Fantastique</option>
-                                <option>Héroïque</option>
-                                <option>Fantasy</option>
-                                <option>Horreur</option>
-                                <option>Dark Fantasy</option>
-                            </select>
-                            <input
-                                type="text" 
-                                placeholder="Auteur" 
+
+                            <input 
+                                type="number" 
+                                placeholder="Prix" 
                                 className="input self-center m-4"
-                                value={author}
-                                onChange={(event) => {setAuthor(event.target.value)}}
+                                value={price ?? ''}
+                                onChange={(event) => {
+                                    const value = event.target.value;
+                                    setPrice(value === '' ? null : Number(value))
+                                }} 
                             />
-                            
+
+                            <input 
+                                type="url" 
+                                placeholder="Lien de l'image" 
+                                className="input self-center m-4"
+                                value={url ?? ""}
+                                onChange={(event) => setUrl(event.target.value || null)}
+                            />
+
+                            <button popoverTarget="rdp-popover" className="input input-border self-center m-4" style={{ anchorName: "--rdp" } as React.CSSProperties}>
+                                {publication_date ?? "Date de parution"}
+                            </button>
+                            <div popover="auto" id="rdp-popover" className="dropdown" style={{ positionAnchor: "--rdp" } as React.CSSProperties}>
+                                <DayPicker 
+                                    className="react-day-picker"
+                                    timeZone="UTC" 
+                                    mode="single" 
+                                    selected={publication_date ? new Date(publication_date) : undefined} 
+                                    onSelect={(date) => 
+                                        setPublication_Date(date ? date.toISOString().split('T')[0] : null)
+                                    } />
+                            </div>
                             <div className="flex justify-around">
                                 <h3 className="self-center m-4 text-xl">Ajouter à la réserve</h3>
                                 <button 
+                                    disabled={isLoading}
                                     type="button"
-                                    onClick={handleSave}>
-                                    <Image
+                                    onClick={handleSubmit}>
+                                        {isLoading ? 'Création...' : <Image
                                         src={ImageValide}
                                         alt="Valider"
                                         width={50}
-                                    />
+                                    /> }
+                                    
                                 </button>
                             </div>
                         </div>
                     </fieldset>
-                    <div className="self-center">
-                        {successMessage && <SuccessMessage 
-                        successMessage = {successMessage} 
-                        isSuccessMessage = {isSuccessMessage}/>}
-                    </div>
+                    {message && (
+                        <SuccessMessage
+                            successMessage={message.text}
+                            isSuccessMessage={message.type === 'succes'}
+                        />
+                    )}
                 
         </>
     )
