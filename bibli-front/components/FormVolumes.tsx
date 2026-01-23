@@ -108,19 +108,19 @@ export default function FormVolumes ({
                             />
 
                             {isSearching && (
-                                <p className="text-sm text-gray-400 italic ml-18">
+                                <p className="text-sm text-gray-400 italic ml-2">
                                     Recherche en cours...
                                 </p>
                             )}
 
                             {!isSearching && hasSearched && !searchSerie && (
-                                <p className="text-sm text-gray-400 ml-18">
+                                <p className="text-sm text-gray-400 ml-2">
                                     Aucun résultat
                                 </p>
                             )}
                             
                             {searchSerie && (
-                                <p className="text-green-600 ml-18">
+                                <p className="text-green-600 ml-2">
                                     {searchSerie.title} — dernier volume{" "}
                                     {searchSerie.lastVolumeNumber ?? "aucun"}
                                 </p>

@@ -12,11 +12,13 @@ import BookCard from "@/components/BookCard";
 import IBook from "@/@types/Series";
 import { useEffect, useState } from "react";
 import { getAllSeries } from "../services/book.service";
+import Filters from "@/components/FilterCard";
 
 
 export default function MaCollectionPage () {
     const [bookData, setBookData] = useState<IBook[]>([]);
     const [errorBook, setErrorBook] = useState('')
+    const [showFilters, setShowFilters] = useState(false)
 
     useEffect(() =>{
         const fetchSeries = async () => {
@@ -30,6 +32,7 @@ export default function MaCollectionPage () {
         }
         fetchSeries();
     }, [])
+
 
 
     return(
@@ -70,7 +73,9 @@ export default function MaCollectionPage () {
             <div className="flex justify-between items-stretch m-5">
                 <div className="self-center"><h2>Séries : 200 - Albums : 1000</h2></div>
                 <div>
-                    <button className="btn h-8 w-20 rounded-xl outline-1 outline-gray-500 ">
+                    <button 
+                        className="btn h-8 w-20 rounded-xl outline-1 outline-gray-500 "
+                        onClick={() => setShowFilters(prev => !prev)}>
                         <Image
                             src= {ImageFiltre}
                             alt="Icône filtre"
@@ -80,12 +85,12 @@ export default function MaCollectionPage () {
                     </button>
                 </div>
             </div>
-            <BookCard 
-                books={bookData}/>
+            {showFilters === true ? 
+                <Filters onClose={() => setShowFilters(false)}/> : 
+                <BookCard books={bookData}/>  }
+            
             <Recommandation />
             </ProtectedRoute>
-            
-            
         </>
     )
 }

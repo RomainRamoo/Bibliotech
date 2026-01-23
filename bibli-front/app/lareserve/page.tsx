@@ -8,12 +8,8 @@ import FormVolumes, { searchSerieWithLastVolume } from "@/components/FormVolumes
 import { createVolume } from "../services/volume.service";
 
 
-interface IBookProps {
-    onUpdate: () => void;
-}
 
-
-export default function Admin ({onUpdate}: IBookProps) {
+export default function Admin () {
     const [searchTitle, setSearchTitle] = useState("");
     const [debouncedSearchTitle, setDebouncedSearchTitle] = useState("");
     
@@ -87,7 +83,6 @@ export default function Admin ({onUpdate}: IBookProps) {
 
             setSearchTitle("");
             setBookData(null);
-            onUpdate();
         } catch (error) {
             throw error;
         }

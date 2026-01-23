@@ -19,7 +19,7 @@ export default function BookCard({ books }: Props) {
                         <div className="flex w-full outline-1 outline-gray-300 hover:outline-orange-400 rounded-xl m-1">
                             <div className="relative w-[60px] h-[90px] m-2">
                                 <Image 
-                                    src={book.book_cover}
+                                    src={book.book_cover!}
                                     alt={book.title}
                                     fill
                                     sizes="60px"

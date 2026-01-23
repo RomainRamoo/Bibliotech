@@ -1,3 +1,4 @@
+'use client'
 import IBook from "@/@types/Series";
 import { useEffect, useState } from "react";
 import Image from "next/image";
@@ -81,6 +82,7 @@ export default function AddBook ({
             setFormat('');
             setAuthor('');
             setPrice(null);
+            setUrl('');
             setLastVolumeNumber(1);
 
             setMessage({ text: 'Livre ajouté !', type: 'succes' });
@@ -88,6 +90,7 @@ export default function AddBook ({
 
         } catch (error) {
             setMessage({ text:"❌ Une erreur est survenue lors de l'enregistrement.", type: 'error'});
+            console.log(error)
         } finally {
             { setIsLoading(false) }
         }
@@ -101,8 +104,9 @@ export default function AddBook ({
         setGenre(bookData.genre);
         setFormat(bookData.format);
         setAuthor(bookData.author);
+        setUrl(bookData.book_cover ?? null);
         setPrice(volumeData?.price ?? null);
-    }, [bookData, volumeData]);
+    }, [bookData]);
     
     return (
         <>
@@ -118,19 +122,19 @@ export default function AddBook ({
                             />
 
                             {isSearching && (
-                                <p className="text-sm text-gray-400 italic ml-18">
+                                <p className="text-sm text-gray-400 italic ml-2">
                                     Recherche en cours...
                                 </p>
                             )}
 
                             {!isSearching && hasSearched && !bookData && (
-                                <p className="text-sm text-gray-400 ml-18">
+                                <p className="text-sm text-gray-400 ml-2">
                                     Aucun résultat
                                 </p>
                             )}
                             
                             {bookData && (
-                                <p className="text-sm text-green-600 ml-18">
+                                <p className="text-sm text-green-600 ml-2">
                                     {bookData.title}
                                 </p>
                             )}
@@ -193,14 +197,19 @@ export default function AddBook ({
                                 <option>Seinen</option>
                                 <option>Autre</option>
                             </select>
+                            <label className="input">
+                                <span className="label">/</span>
+                                <input 
+                                    type="url" 
+                                    placeholder="Lien de la couverture" 
+                                    className="input self-center m-4"
+                                    value={url ?? ""}
+                                    onChange={(event) => setUrl(event.target.value || null)}
+                                />
+                                <span className="label">.webp</span>
 
-                            <input 
-                                type="url" 
-                                placeholder="Lien de la couverture" 
-                                className="input self-center m-4"
-                                value={url ?? ""}
-                                onChange={(event) => setUrl(event.target.value || null)}
-                            />
+                            </label>
+
 
                             <input
                                 type="text" 
