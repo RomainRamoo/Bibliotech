@@ -10,15 +10,25 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 import Recommandation from "@/components/UserRecommendation";
 import BookCard from "@/components/BookCard";
 import IBook from "@/@types/Series";
-import { useEffect, useState } from "react";
+import IVolume from "@/@types/Volume";
+import { useEffect, useState, useMemo } from "react";
 import { getAllSeries } from "../services/book.service";
 import Filters from "@/components/FilterCard";
 
+type FilterState = {
+    classement: string[];
+    genres: string[];
+};
 
 export default function MaCollectionPage () {
     const [bookData, setBookData] = useState<IBook[]>([]);
+    const [volumeData, setVolumeData] = useState<IVolume[]>([])
     const [errorBook, setErrorBook] = useState('')
     const [showFilters, setShowFilters] = useState(false)
+    const [filters, setFilters] = useState<FilterState>({
+        classement: [],
+        genres: []
+    })
 
     useEffect(() =>{
         const fetchSeries = async () => {
@@ -32,6 +42,26 @@ export default function MaCollectionPage () {
         }
         fetchSeries();
     }, [])
+
+    const filteredBooks = useMemo(() => {
+        return bookData.filter(book => {
+
+            if(
+                filters.classement.length > 0 &&
+                !filters.classement.includes(book.format)
+            ) return false;
+
+            if (
+                filters.genres.length > 0 &&
+                !filters.genres.includes(book.genre)
+            ) return false;
+
+            return true;
+        });
+    }, [bookData, filters]);
+
+    const totalSeries = bookData.length;
+    const totalBooks = volumeData.length;
 
 
 
@@ -71,7 +101,7 @@ export default function MaCollectionPage () {
                 </div>
             </div>
             <div className="flex justify-between items-stretch m-5">
-                <div className="self-center"><h2>Séries : 200 - Albums : 1000</h2></div>
+                <div className="self-center"><h2>Séries : {totalSeries} - Albums : {totalBooks}</h2></div>
                 <div>
                     <button 
                         className="btn h-8 w-20 rounded-xl outline-1 outline-gray-500 "
@@ -86,8 +116,11 @@ export default function MaCollectionPage () {
                 </div>
             </div>
             {showFilters === true ? 
-                <Filters onClose={() => setShowFilters(false)}/> : 
-                <BookCard books={bookData}/>  }
+                <Filters 
+                    filters={filters}
+                    setFilters={setFilters}
+                    onClose={() => setShowFilters(false)}/> : 
+                <BookCard books={filteredBooks}/>  }
             
             <Recommandation />
             </ProtectedRoute>

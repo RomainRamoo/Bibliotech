@@ -1,25 +1,69 @@
+'use client';
+
+import CheckboxList from "./CheckboxCard";
+
+interface FilterState {
+    classement: string[];
+    genres: string[];
+}
+
+interface FiltersProps {
+    filters: FilterState;
+    setFilters: React.Dispatch<React.SetStateAction<FilterState>>;
+    onClose: () => void;
+}
+
+const genres = [
+    "Shonen",
+    "Seinen",
+    "Fantastique",
+    "Autre",
+];
+
+const classement = [
+    "Manga",
+    "Comics",
+    "BDs",
+    "Lus",
+];
 
 
+export default function Filters({ filters, setFilters, onClose }: FiltersProps) {
 
-
-
-
-export default function Filters () {
-
+    const toggle = (key: keyof FilterState, value: string) => {
+        setFilters(prev => ({
+            ...prev,
+            [key]: prev[key].includes(value)
+                ? prev[key].filter(v => v !== value)
+                : [...prev[key], value]
+        }));
+    };
 
     return (
-        <>
-            <div className="fieldset glass rounded-box m-2">
-                <h2 className="text-center text-xl">Filtres</h2>
-
-                <input
-                    type="checkbox"
-                    checked="checked"
-                    className="sel-center toggle border-indigo-600 bg-indigo-500 checked:border-orange-500 checked:bg-orange-400 checked:text-orange-800"
-/>
-
-
+        <div className="m-2 border rounded">
+            <h3 className="text-center">Filtres</h3>
+            <div className="m-4">
+                <CheckboxList 
+                    items={classement}
+                    selected={filters.classement}
+                    onToggle={(v) => toggle("classement", v)}/>
             </div>
-        </>
-    )
+
+            <h3 className="text-center">Genres :</h3>
+            <div className="m-4">
+                <CheckboxList 
+                    items={genres}
+                    selected={filters.genres}
+                    onToggle={(v) => toggle("genres", v)}/>
+            </div>
+
+            <button
+                type="button"
+                onClick={onClose}
+                className="btn btn-sm mt-2"
+            >
+                Fermer
+            </button>
+        </div>
+    );
 }
